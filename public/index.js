@@ -66,39 +66,40 @@ function populateChart() {
 
   myChart = new Chart(ctx, {
     type: 'line',
-      data: {
-        labels,
-        datasets: [{
-            label: "Total Over Time",
-            fill: true,
-            backgroundColor: "#6666ff",
-            data
-        }]
+    data: {
+      labels,
+      datasets: [{
+        label: "Total Over Time",
+        fill: true,
+        backgroundColor: "#6666ff",
+        data
+      }]
     }
   });
 }
 
-function saveRecord (arg) {
+function saveRecord(arg) {
   const request = window.indexedDB.open("budgetList", 1);
 
-    // Create schema
-    request.onupgradeneeded = event => {
-      const db = event.target.result;
-      
-      // Creates an object store with a listID keypath that can be used to query on.
-      const budgetListStore = db.createObjectStore("budgetList", {keyPath: "listID"});
-      // Creates a statusIndex that we can query on.
-      budgetListStore.createIndex("statusIndex", "status"); 
-    }
+  // Create schema
+  request.onupgradeneeded = event => {
+    const db = event.target.result;
 
-    // Opens a transaction, accesses the budgetList objectStore and statusIndex.
-    request.onsuccess = () => {
-      const db = request.result;
-      const transaction = db.transaction(["budgetList"], "readwrite");
-      const budgetListStore = transaction.objectStore("budgetList");
+    // Creates an object store with a listID keypath that can be used to query on.
+    const budgetListStore = db.createObjectStore("budgetList", { keyPath: "listID" });
+    // Creates a statusIndex that we can query on.
+    budgetListStore.createIndex("statusIndex", "status");
+  }
 
-      // Adds data to our objectStore
-      budgetListStore.add(arg);
+  // Opens a transaction, accesses the budgetList objectStore and statusIndex.
+  request.onsuccess = () => {
+    const db = request.result;
+    const transaction = db.transaction(["budgetList"], "readwrite");
+    const budgetListStore = transaction.objectStore("budgetList");
+
+    // Adds data to our objectStore
+    budgetListStore.add(arg);
+  }
 }
 
 function sendTransaction(isAdding) {
@@ -134,7 +135,7 @@ function sendTransaction(isAdding) {
   populateChart();
   populateTable();
   populateTotal();
-  
+
   // also send to server
   fetch("/api/transaction", {
     method: "POST",
@@ -144,33 +145,33 @@ function sendTransaction(isAdding) {
       "Content-Type": "application/json"
     }
   })
-  .then(response => {    
-    return response.json();
-  })
-  .then(data => {
-    if (data.errors) {
-      errorEl.textContent = "Missing Information";
-    }
-    else {
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      if (data.errors) {
+        errorEl.textContent = "Missing Information";
+      }
+      else {
+        // clear form
+        nameEl.value = "";
+        amountEl.value = "";
+      }
+    })
+    .catch(err => {
+      // fetch failed, so save in indexed db
+      saveRecord(transaction);
+
       // clear form
       nameEl.value = "";
       amountEl.value = "";
-    }
-  })
-  .catch(err => {
-    // fetch failed, so save in indexed db
-    saveRecord(transaction);
-
-    // clear form
-    nameEl.value = "";
-    amountEl.value = "";
-  });
+    });
 }
 
-document.querySelector("#add-btn").onclick = function() {
+document.querySelector("#add-btn").onclick = function () {
   sendTransaction(true);
 };
 
-document.querySelector("#sub-btn").onclick = function() {
+document.querySelector("#sub-btn").onclick = function () {
   sendTransaction(false);
 };
