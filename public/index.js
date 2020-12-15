@@ -78,6 +78,29 @@ function populateChart() {
   });
 }
 
+function saveRecord (arg) {
+  const request = window.indexedDB.open("budgetList", 1);
+
+    // Create schema
+    request.onupgradeneeded = event => {
+      const db = event.target.result;
+      
+      // Creates an object store with a listID keypath that can be used to query on.
+      const budgetListStore = db.createObjectStore("budgetList", {keyPath: "listID"});
+      // Creates a statusIndex that we can query on.
+      budgetListStore.createIndex("statusIndex", "status"); 
+    }
+
+    // Opens a transaction, accesses the budgetList objectStore and statusIndex.
+    request.onsuccess = () => {
+      const db = request.result;
+      const transaction = db.transaction(["budgetList"], "readwrite");
+      const budgetListStore = transaction.objectStore("budgetList");
+
+      // Adds data to our objectStore
+      budgetListStore.add(arg);
+}
+
 function sendTransaction(isAdding) {
   let nameEl = document.querySelector("#t-name");
   let amountEl = document.querySelector("#t-amount");
