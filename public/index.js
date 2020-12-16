@@ -86,9 +86,9 @@ function saveRecord(arg) {
     const db = event.target.result;
 
     // Creates an object store with a listID keypath that can be used to query on.
-    const budgetListStore = db.createObjectStore("budgetList", { keyPath: "listID" });
+    db.createObjectStore("budgetList", { keyPath: "listID", autoIncrement: true });
     // Creates a statusIndex that we can query on.
-    budgetListStore.createIndex("statusIndex", "status");
+    // budgetListStore.createIndex("transactions", {keyPath: "listID"});
   }
 
   // Opens a transaction, accesses the budgetList objectStore and statusIndex.
