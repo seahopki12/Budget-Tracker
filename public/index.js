@@ -78,29 +78,30 @@ function populateChart() {
   });
 }
 
-function saveRecord(arg) {
-  const request = window.indexedDB.open("budgetList", 1);
+// function saveRecord(arg) {
+//   const request = window.indexedDB.open("budgetList", 1);
 
-  // Create schema
-  request.onupgradeneeded = event => {
-    const db = event.target.result;
+//   // Create schema
+//   request.onupgradeneeded = event => {
+//     let db = event.target.result;
 
-    // Creates an object store with a listID keypath that can be used to query on.
-    db.createObjectStore("budgetList", { keyPath: "listID", autoIncrement: true });
-    // Creates a statusIndex that we can query on.
-    // budgetListStore.createIndex("transactions", {keyPath: "listID"});
-  }
+//     // Creates an object store with a listID keypath that can be used to query on.
+//     const budgetListStore = db.createObjectStore("budgetList", { keyPath: "listID", autoIncrement: true });
+//     // Creates a statusIndex that we can query on.
+//     budgetListStore.createIndex("nameIndex", "name");
+//   }
 
-  // Opens a transaction, accesses the budgetList objectStore and statusIndex.
-  request.onsuccess = () => {
-    const db = request.result;
-    const transaction = db.transaction(["budgetList"], "readwrite");
-    const budgetListStore = transaction.objectStore("budgetList");
+//   // Opens a transaction, accesses the budgetList objectStore and statusIndex.
+//   request.onsuccess = () => {
+//     const db = request.result;
+//     const transaction = db.transaction(["budgetList"], "readwrite");
+//     const budgetListStore = transaction.objectStore("budgetList");
 
-    // Adds data to our objectStore
-    budgetListStore.add(arg);
-  }
-}
+//     // Adds data to our objectStore
+//     budgetListStore.add(arg);
+//   }
+// }
+
 
 function sendTransaction(isAdding) {
   let nameEl = document.querySelector("#t-name");
